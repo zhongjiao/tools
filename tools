@@ -1,0 +1,21 @@
+var handleIfMiniProgram = function (cbFun) {
+  var ua = window.navigator.userAgent;
+  var isMini =
+    /miniprogram|miniapp(?!enable)/i.test(ua) ||
+    (typeof __wxjs_environment !== 'undefined' && __wxjs_environment === 'miniprogram');
+  var cbSuc = cbFun || function () {};
+  var isWxMiniProgram = /MicroMessenger/i.test(ua) && isMini;
+  var isQQMiniProgram = /QQ\/|TIM/i.test(ua) && isMini;
+  var isMiniProgram = isWxMiniProgram || isQQMiniProgram;
+
+  if (isMiniProgram) {
+    var script = document.createElement('script');
+    script.onload = function () {
+      window.loadedWxSdk = true;
+      cbSuc();
+    };
+    script.src = isQQMiniProgram ? QQ_JS_SDK_URL : WECHAT_SDK_URL;
+    document.head.appendChild(script);
+  }
+};
+handleIfMiniProgram();
